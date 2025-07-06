@@ -10,18 +10,24 @@ const CheckoutPage: React.FC = () => {
   const total = cart.reduce((sum: number, item: CartItem) => sum + item.price * item.quantity, 0);
 
   const handleSubmit = () => {
+    if (!name || !phone) {
+      alert("Пожалуйста, заполните имя и телефон");
+      return;
+    }
+
     const orderData = {
       name,
       phone,
-      cart: cart.map(item => ({
+      items: cart.map((item) => ({
         name: item.name,
         quantity: item.quantity,
         price: item.price,
       })),
-      total,
+      total: total,
     };
 
     // Отправка данных в Telegram WebApp
+    console.log("Telegram WebApp:", window.Telegram);
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.sendData(JSON.stringify(orderData));
       window.Telegram.WebApp.close(); // закрываем мини-приложение

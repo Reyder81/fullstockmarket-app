@@ -5,9 +5,13 @@ declare global {
     Telegram: {
       WebApp: {
         initData: string;
-        initDataUnsafe: object;
+        initDataUnsafe: any;
+        version: string;
+        platform: string;
+        colorScheme: string;
         sendData: (data: string) => void;
         close: () => void;
+        ready: () => void;
         MainButton: {
           show: () => void;
           hide: () => void;
