@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { CartItem } from "../context/CartContext";
+import { useEffect } from "react";
+
 
 const CheckoutPage: React.FC = () => {
   const { cart } = useCart();
@@ -8,7 +10,16 @@ const CheckoutPage: React.FC = () => {
   const [phone, setPhone] = useState("");
 
   const total = cart.reduce((sum: number, item: CartItem) => sum + item.price * item.quantity, 0);
-
+  
+  useEffect(() => {
+  if (window.Telegram?.WebApp) {
+    window.Telegram.WebApp.ready();
+    window.Telegram.WebApp.MainButton.hide();
+  } else {
+    console.log("Telegram WebApp не найден при загрузке страницы");
+  }
+  }, []);
+  
   const handleSubmit = () => {
     if (!name || !phone) {
       alert("Пожалуйста, заполните имя и телефон");
@@ -27,13 +38,16 @@ const CheckoutPage: React.FC = () => {
     };
 
     // Отправка данных в Telegram WebApp
-    console.log("Telegram WebApp:", window.Telegram);
-    if (window.Telegram && window.Telegram.WebApp) {
-      window.Telegram.WebApp.sendData(JSON.stringify(orderData));
-      window.Telegram.WebApp.close(); // закрываем мини-приложение
-    } else {
-      alert("Ошибка: Telegram WebApp не найден");
-    }
+    console.log("window.Telegram =", window.Telegram);
+    console.log("window.Telegram.WebApp =", window.Telegram?.WebApp);
+
+   if (typeof window.Telegram !== "undefined" && window.Telegram.WebApp) {
+    window.Telegram.WebApp.sendData(JSON.stringify(orderData));
+    window.Telegram.WebApp.close();
+  } else {
+    alert("Ошибка: Telegram WebApp не найден");
+  }
+
 
     // Очистка формы
     setName("");
